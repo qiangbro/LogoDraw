@@ -18,7 +18,9 @@
 #
 #   在给定的影片上覆盖指定的logo。
 #   支持设置覆盖的锚点坐标、锚点定位方式、开始帧、结束帧、渐进渐出、透明度、放缩比例 等。
-#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。再次感谢原版作者QiuSJ的idea。
+#
+#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。感谢原版作者QiuSJ的idea。
+#
 #
 #   Author : Mikey
 #   E-mail : qiangbro@qq.com
@@ -41,7 +43,8 @@
 #                   当end为正数、负数、0时，有不同的意义：
 #                   end>0：表示logo的结束帧帧号。
 #                   end<0：绝对值表示logo持续显示的帧数。
-#                   end=0：表示logo一直持续到最后
+#                   end=0：表示logo一直持续到最后。
+#                   （如果你知道Trim的用法的话，你应该理解我为什么要这么设计）
 #
 #                   end_margin表示logo结束帧距离影片结束相距的帧数。要求end_margin>=0
 #                   例如，如果end_margin=0，表示logo一直持续到影片结束。
@@ -63,26 +66,26 @@
 # 一般示例
 #   Import("H:\fansub-work\[fansub-dev\LogoDraw\LogoDraw.avsi")
 #   DGSource("H:\fansub-work\[任务\2016.05.29 セノビタビ\02-悉尼\src\2016060100350105-フジテレビ-セノビタビ。.dgi")
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png")
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png")
 #
 #
 # 水平居中在垂直的90%位置处覆盖logo
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.5, y=0.9, anchor=5)
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.5, y=0.9, anchor=5)
 #
 # 影片开始后延迟60帧显示logo，影片结束前提前60帧隐藏logo
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=60, end_margin=60)
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=60, end_margin=60)
 #
 # 在1000帧时开始显示logo，显示120帧之后隐藏
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
 #
 # 渐进渐出40帧，logo透明度60%
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, fadein=40, fadeout=40, opacity=0.6)
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, fadein=40, fadeout=40, opacity=0.6)
 #
 # 将logo尺寸缩小到50%
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, zoom=0.5)
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, zoom=0.5)
 #
 # 综合例子
-#   logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", \
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", \
 #          x=0.91, y=0.91, anchor=5, opacity=0.43, start=50, end_margin=50, fadein=20, fadeout=20)
 #
 
@@ -112,7 +115,6 @@ function LogoDraw (clip src, string overlay,\
     int "start", int "end", int "end_margin", \
     int "fadein", int "fadeout", float "opacity", float "zoom") {
     
-    
     anchor  = Default(anchor,              7)
     x       = Default(x,                   0)
     y       = Default(y,                   0)
@@ -131,8 +133,12 @@ function LogoDraw (clip src, string overlay,\
     Assert(zoom    > 0,    "zoom must greater than zero")
     Assert(Defined(overlay), "a png file is required")
 
-    #根据end、end_margin计算last_frame
-    #如果定义了end，则last_frame取end。如果未定义end或end_margin，last_frame取0。如果未定义end但定义了end_margin，last_frame取src.FrameCount()-1-end_margin
+    #根据end、end_margin计算last_frame。
+    #last_frame 正数表示logo结束帧号，0表示logo持续到最后，负数表示logo持续帧数。
+    #（如果你知道Trim的用法的话，你应该理解我为什么要这么设计）
+    #如果定义了end，则last_frame直接取end。
+    #如果未定义end与end_margin，则last_frame取0。
+    #如果未定义end但定义了end_margin，则last_frame取-(src.FrameCount()-start-end_margin)
     last_frame = Default(end, Defined(end_margin) ? -(src.FrameCount()-start-end_margin) : 0)
     
     #将需要添加logo的片段截取出来
@@ -182,7 +188,6 @@ function LogoDraw (clip src, string overlay,\
     #验证叠加logo后全片帧数与叠加前一致
     Assert(new_clip.FrameCount() == src.FrameCount(), "LogoDraw内部错误：添加logo后帧数与原帧数不一致")
     
-    audio_source = src.KillVideo()
-    return AudioDub(new_clip, audio_source)
+    return AudioDub(new_clip, src.KillVideo())
 }
 
