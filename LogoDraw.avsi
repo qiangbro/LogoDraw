@@ -59,6 +59,10 @@
 #
 #
 
+###---REQUIREMENTS---
+#
+#   avisynth 2.58 或更高
+#
 
 ###---CODE EXAMPLES---
 #
@@ -89,17 +93,33 @@
 #          x=0.91, y=0.91, anchor=5, opacity=0.43, start=50, end_margin=50, fadein=20, fadeout=20)
 #
 
+
 ###---已知问题---
 #
-# 多线程环境可能需要改一下各个系统滤镜的模式：
+# 如果start、end、end_margin值超出了影片长度，则本函数会主动报错，而不是让logo不显示。
+#
+
+
+
+###---测试---
+#
+# 通过运行以下avs文件检验是否能够正常工作
+#   test\test_logodraw.avs
+#
+# 已在以下版本的avisynth测试，可以正常工作
+#   avisynth 2.58
+#   avisynth 2.60
+#   avisynth+ 0.1 r1858 MT-pfmod
+#
+#
+# 在avisynth+ MT-pfmod下，可能需要改一下各个系统滤镜的模式：
 #~ SetFilterMTMode("ImageSource", 3) 
 #~ SetFilterMTMode("Overlay", 3) 
 #~ SetFilterMTMode("FadeIn0", 3) 
 #~ SetFilterMTMode("FadeOut0", 3) 
 #~ SetFilterMTMode("Spline64Resize", 3)
 #
-# 如果start、end、end_margin值超出了影片长度，则本函数会主动报错，而不是让logo不显示。
-#
+
 
 
 ###---CHANGELOG---
@@ -188,6 +208,8 @@ function LogoDraw (clip src, string overlay,\
     #验证叠加logo后全片帧数与叠加前一致
     Assert(new_clip.FrameCount() == src.FrameCount(), "LogoDraw内部错误：添加logo后帧数与原帧数不一致")
     
-    return AudioDub(new_clip, src.KillVideo())
+    new_clip = src.HasAudio() ? new_clip.AudioDub(src.KillVideo()) : new_clip
+    
+    return new_clip
 }
 
