@@ -8,7 +8,7 @@ LogoDraw 1.0
 
 本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。
 
-详细说用说明请看LogoDraw.avsi的注释。
+示例、详细说明见LogoDraw.avsi注释。
 
 
 Author : Mikey
@@ -22,5 +22,6 @@ E-mail : qiangbro@qq.com
 
 
 示例:
-    在1000帧时开始显示logo，显示120帧之后隐藏
-    logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
+
+        #在1000帧时开始显示logo，显示120帧之后隐藏
+        logoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
