@@ -29,22 +29,22 @@
 
 ###---参数说明---
 # 
-# src              原影片
+# src               原影片
 #
-# overlay          logo文件路径，建议用PNG图片。例如：H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png
+# overlay           logo文件路径，建议用PNG图片。例如：H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png
 #
-# start            logo的开始帧，0表示一开始就出现。默认0
+# start             logo的开始帧，0表示一开始就出现。默认0
 #
-# end              正数：表示logo的结束帧，
-#                  负数：表示logo持续的帧数，
-#                  0：表示logo一直持续到最后
+# end,end_margin    end与end_margin用于确定logo的结束帧。
+#                   end与end_margin不支持同时使用，最多只能写其中一个。
 #
-# end_margin       logo结束帧距离片尾相距的帧数，0表示logo一直持续到最后。
-#                  如果不方便给出logo的结束帧号则可以指定该值。
+#                   当end为正数、负数、0时，有不同的意义：
+#                   end>0：表示logo的结束帧帧号。
+#                   end<0：绝对值表示logo持续显示的帧数。
+#                   end=0：表示logo一直持续到最后
 #
-# (关于end与end_margin的使用)
-#                  end不能与end_margin同时使用，最多只支持填一个。
-#                  end与end_margin可以都不填，表示logo一直持续到最后。
+#                   end_margin表示logo结束帧距离影片结束相距的帧数。要求end_margin>=0
+#                   例如，如果end_margin=0，表示logo一直持续到影片结束。
 #
 # fadein, fadeout  logo渐进渐出动画帧数
 #
@@ -123,7 +123,7 @@ function LogoDraw (clip src, string overlay,\
     zoom    = Default(zoom,                1.00)
     
     Assert(start   >= 0,  "start below 0")
-    Assert((Defined(end) && Defined(end_margin))==false,  "暂不支持同时定义end、end_padding")
+    Assert((Defined(end) && Defined(end_margin))==false,  "暂不支持同时定义end、end_margin")
     Assert((Defined(end_margin)==false) || end_margin >= 0,  "end_margin below 0")
     Assert((Defined(end_margin)==false) || start + end_margin < src.FrameCount(), "start与end_margin之和超出了影片帧数，无法进行logo的覆盖")
     Assert(fadein  >= 0,  "fadein below 0")
