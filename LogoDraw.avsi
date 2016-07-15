@@ -18,7 +18,7 @@
 #
 #   在给定的影片上覆盖指定的logo。
 #   支持设置覆盖的锚点坐标、锚点定位方式、开始帧、结束帧、渐进渐出、透明度、放缩比例 等。
-#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。
+#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。再次感谢原版作者QiuSJ的idea。
 #
 #   Author : Mikey
 #   E-mail : qiangbro@qq.com
@@ -107,8 +107,12 @@
 
 
 
-function LogoDraw(clip src, string overlay, int "anchor", val "x", val "y", int "start", int "end", int "end_margin", int "fadein", int "fadeout", float "opacity", float "zoom")
-{
+function LogoDraw (clip src, string overlay,\
+    int "anchor", val "x", val "y", \
+    int "start", int "end", int "end_margin", \
+    int "fadein", int "fadeout", float "opacity", float "zoom") {
+    
+    
     anchor  = Default(anchor,              7)
     x       = Default(x,                   0)
     y       = Default(y,                   0)
