@@ -19,13 +19,44 @@
 #   在给定的影片上覆盖指定的logo。
 #   支持设置覆盖的锚点坐标、锚点定位方式、开始帧、结束帧、渐进渐出、透明度、放缩比例 等。
 #
-#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。感谢原版作者QiuSJ的idea。
+#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。感谢原版作者QiuSJ的点子。
 #
 #
 #   Author : Mikey
 #   E-mail : qiangbro@qq.com
 #   所在团队 : 有村花纯字幕组
 #   项目网址 : https://github.com/qiangbro/LogoDraw
+#
+
+
+###---CODE EXAMPLES---
+#
+#
+# 一般示例
+#   Import("H:\fansub-work\[fansub-dev\LogoDraw\LogoDraw.avsi")
+#   DGSource("H:\fansub-work\[任务\2016.05.29 セノビタビ\02-悉尼\src\2016060100350105-フジテレビ-セノビタビ。.dgi")
+#   #右下角添加水印
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.92, y=0.92, align=5)
+#
+#
+# 水平居中在垂直的90%位置处覆盖logo
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.5, y=0.9, align=5)
+#
+# 影片开始后延迟60帧显示logo，影片结束前提前60帧隐藏logo
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=60, end_margin=60)
+#
+# 在1000帧时开始显示logo，显示120帧之后隐藏
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
+#
+# 渐进渐出40帧，logo透明度60%
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, fadein=40, fadeout=40, opacity=0.6)
+#
+# 将logo尺寸缩小到50%
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, zoom=0.5)
+#
+# 综合例子
+#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", \
+#          x=0.91, y=0.91, align=5, opacity=0.43, start=50, end_margin=50, fadein=20, fadeout=20)
 #
 
 
@@ -51,9 +82,9 @@
 #
 # fadein, fadeout  logo渐进渐出动画帧数
 #
-# anchor           logo的锚点定位方式，支持9种，分别是1~9，参考你的小键盘（例如：7表示以logo左上角为锚点）
+# align           logo的锚点定位方式，支持9种，分别是1~9，参考你的小键盘（例如：7表示以logo左上角为锚点）
 #
-# x, y             锚点坐标，以影片左上角为原点，可以为负值。可以为浮点数，表示百分比。
+# x, y             锚点坐标，以影片左上角为原点，可以为负值。可以为浮点数，表示百分比。默认使用align表示的位置进行定位
 #
 # zoom             logo放缩比例，1表示不改变大小，0.0~1.0表示缩小，大于1.0表示放大
 #
@@ -62,35 +93,6 @@
 ###---REQUIREMENTS---
 #
 #   avisynth 2.58 或更高
-#
-
-###---CODE EXAMPLES---
-#
-#
-# 一般示例
-#   Import("H:\fansub-work\[fansub-dev\LogoDraw\LogoDraw.avsi")
-#   DGSource("H:\fansub-work\[任务\2016.05.29 セノビタビ\02-悉尼\src\2016060100350105-フジテレビ-セノビタビ。.dgi")
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png")
-#
-#
-# 水平居中在垂直的90%位置处覆盖logo
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.5, y=0.9, anchor=5)
-#
-# 影片开始后延迟60帧显示logo，影片结束前提前60帧隐藏logo
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=60, end_margin=60)
-#
-# 在1000帧时开始显示logo，显示120帧之后隐藏
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, start=1000, end=-120)
-#
-# 渐进渐出40帧，logo透明度60%
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, fadein=40, fadeout=40, opacity=0.6)
-#
-# 将logo尺寸缩小到50%
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, zoom=0.5)
-#
-# 综合例子
-#   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", \
-#          x=0.91, y=0.91, anchor=5, opacity=0.43, start=50, end_margin=50, fadein=20, fadeout=20)
 #
 
 
@@ -124,6 +126,9 @@
 
 ###---CHANGELOG---
 #
+#   2016.8.10 v1.1 by Mikey
+#       更换锚点定位策略，取消原anchor，改为align，不填x、y时，默认使用align表示的位置进行定位
+#
 #   2016.7.15 v1.0 by Mikey
 #       初版功能实现。
 #
@@ -131,13 +136,20 @@
 
 
 function LogoDraw (clip src, string overlay,\
-    int "anchor", val "x", val "y", \
+    int "align", val "x", val "y", \
     int "start", int "end", int "end_margin", \
     int "fadein", int "fadeout", float "opacity", float "zoom") {
     
-    anchor  = Default(anchor,              7)
-    x       = Default(x,                   0)
-    y       = Default(y,                   0)
+    align  = Default(align,              7)
+
+    x       = Default(x,    (align==1 || align==4 || align==7) ? 0 : 
+\                           (align==2 || align==5 || align==8) ? src.Width / 2 : 
+\                           (align==3 || align==6 || align==9) ? src.Width : Assert(false, "invald align: "+string(align)))
+
+    y       = Default(y,    (align==7 || align==8 || align==9) ? 0 : 
+\                           (align==4 || align==5 || align==6) ? src.Height / 2 : 
+\                           (align==1 || align==2 || align==3) ? src.Height : Assert(false, "invald align: "+string(align)))
+
     start   = Default(start,               0)
     fadein  = Default(fadein,              0)
     fadeout = Default(fadeout,             0)
@@ -181,20 +193,25 @@ function LogoDraw (clip src, string overlay,\
     logo_clip_mask = fadeout>0 ? logo_clip_mask.FadeOut0(fadeout) : logo_clip_mask
     
     
-    #根据锚点换算pos_x pos_y
-    logo_width = logo_clip.Width
-    logo_height = logo_clip.Height
     
+    
+    #百分比转为像素坐标
     int_x = isInt(x)? x : isFloat(x) ? Round(src.Width  * x) : Assert(false, "invalid x type. only int or float is supported.")
     int_y = isInt(y)? y : isFloat(y) ? Round(src.Height * y) : Assert(false, "invalid y type. only int or float is supported.")
     
-    pos_x = (anchor==1 || anchor==4 || anchor==7) ? int_x : 
-\           (anchor==2 || anchor==5 || anchor==8) ? int_x - logo_width/2 : 
-\           (anchor==3 || anchor==6 || anchor==9) ? int_x - logo_width : Assert(false, "invald anchor: "+string(anchor))
+    
+    #根据锚点换算pos_x pos_y
+    
+    logo_width = logo_clip.Width
+    logo_height = logo_clip.Height
+    
+    pos_x = (align==1 || align==4 || align==7) ? int_x : 
+\           (align==2 || align==5 || align==8) ? int_x - logo_width/2 : 
+\           (align==3 || align==6 || align==9) ? int_x - logo_width : Assert(false, "invald align: "+string(align))
 
-    pos_y = (anchor==7 || anchor==8 || anchor==9) ? int_y : 
-\           (anchor==4 || anchor==5 || anchor==6) ? int_y - logo_height/2 : 
-\           (anchor==1 || anchor==2 || anchor==3) ? int_y - logo_height : Assert(false, "invald anchor: "+string(anchor))
+    pos_y = (align==7 || align==8 || align==9) ? int_y : 
+\           (align==4 || align==5 || align==6) ? int_y - logo_height/2 : 
+\           (align==1 || align==2 || align==3) ? int_y - logo_height : Assert(false, "invald align: "+string(align))
     
     
     #向target_clip覆盖logo
