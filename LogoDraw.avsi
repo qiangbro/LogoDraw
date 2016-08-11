@@ -14,12 +14,12 @@
 
 
 #
-#   LogoDraw 1.0
+#   LogoDraw 1.1
 #
-#   在给定的影片上覆盖指定的logo。
-#   支持设置覆盖的锚点坐标、锚点定位方式、开始帧、结束帧、渐进渐出、透明度、放缩比例 等。
+#   在给定的影片上覆盖png格式的logo。
+#   支持设置覆盖的锚点坐标、定位方式、开始/结束帧、渐进渐出、透明度、放缩比例 等。
 #
-#   本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。感谢原版作者QiuSJ的点子。
+#   本函数兼容QiuSJ:JXlogoAdd.avsi的参数，感谢QiuSJ的点子。
 #
 #
 #   Author : Mikey
@@ -39,7 +39,7 @@
 #   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.92, y=0.92, align=5)
 #
 #
-# 水平居中在垂直的90%位置处覆盖logo
+# 水平居中，在垂直的90%位置处覆盖logo
 #   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=0.5, y=0.9, align=5)
 #
 # 影片开始后延迟60帧显示logo，影片结束前提前60帧隐藏logo
@@ -54,7 +54,7 @@
 # 将logo尺寸缩小到50%
 #   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", x=1300, y=730, zoom=0.5)
 #
-# 综合例子
+# 综合例子：右下角添加一个logo
 #   LogoDraw("H:\fansub-work\rina_bar\images\rinabar-watermark-v1.1.png", \
 #          x=0.91, y=0.91, align=5, opacity=0.43, start=50, end_margin=50, fadein=20, fadeout=20)
 #
@@ -82,7 +82,7 @@
 #
 # fadein, fadeout  logo渐进渐出动画帧数
 #
-# align           logo的锚点定位方式，支持9种，分别是1~9，参考你的小键盘（例如：7表示以logo左上角为锚点）
+# align            logo的锚点定位方式，支持9种，分别是1~9，参考你的小键盘（例如：7表示以logo左上角为锚点）
 #
 # x, y             锚点坐标，以影片左上角为原点，可以为负值。可以为浮点数，表示百分比。默认使用align表示的位置进行定位
 #
@@ -114,7 +114,8 @@
 #   avisynth+ 0.1 r1858 MT-pfmod
 #
 #
-# 在avisynth+ MT-pfmod下，可能需要改一下各个系统滤镜的模式：
+# 在多线程环境下，可能需要改一下各个系统滤镜的模式：
+# avisynth+ MT pfmod代码：
 #~ SetFilterMTMode("ImageSource", 3) 
 #~ SetFilterMTMode("Overlay", 3) 
 #~ SetFilterMTMode("FadeIn0", 3) 
