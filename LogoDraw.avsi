@@ -14,7 +14,7 @@
 
 
 #
-#   LogoDraw 1.1
+#   LogoDraw 1.2
 #
 #   在给定的影片上覆盖png格式的logo。
 #   支持设置覆盖的锚点坐标、定位方式、开始/结束帧、渐进渐出、透明度、放缩比例 等。
@@ -88,7 +88,9 @@
 #
 # zoom             logo放缩比例，1表示不改变大小，0.0~1.0表示缩小，大于1.0表示放大
 #
+# par_fit          适应成品影片的pixel aspect ratio，使logo在成品中按原比例显示。只拉伸logo宽度以适应，不改变logo高度。
 #
+
 
 ###---REQUIREMENTS---
 #
@@ -127,6 +129,9 @@
 
 ###---CHANGELOG---
 #
+#   2016.8.13 v1.2 by Mikey
+#       支持par_fit，使logo在成品中按原比例显示。
+#
 #   2016.8.10 v1.1 by Mikey
 #       更换锚点定位策略，取消原anchor，改为align，不填x、y时，默认使用align表示的位置进行定位
 #
@@ -139,7 +144,8 @@
 function LogoDraw (clip src, string overlay,\
     int "align", val "x", val "y", \
     int "start", int "end", int "end_margin", \
-    int "fadein", int "fadeout", float "opacity", float "zoom") {
+    int "fadein", int "fadeout", float "opacity", \
+     float "zoom", float "par_fit") {
     
     align  = Default(align,              7)
 
@@ -151,11 +157,12 @@ function LogoDraw (clip src, string overlay,\
 \                           (align==4 || align==5 || align==6) ? src.Height / 2 : 
 \                           (align==1 || align==2 || align==3) ? src.Height : Assert(false, "invald align: "+string(align)))
 
-    start   = Default(start,               0)
-    fadein  = Default(fadein,              0)
-    fadeout = Default(fadeout,             0)
-    opacity = Default(opacity,             1.00)
-    zoom    = Default(zoom,                1.00)
+    start   = Default(start,                0)
+    fadein  = Default(fadein,               0)
+    fadeout = Default(fadeout,              0)
+    opacity = Default(opacity,              1.00)
+    zoom    = Default(zoom,                 1.00)
+    par_fit     = Default(par_fit,          1.00)
     
     Assert(start   >= 0,  "start below 0")
     Assert((Defined(end) && Defined(end_margin))==false,  "暂不支持同时定义end、end_margin")
@@ -185,8 +192,9 @@ function LogoDraw (clip src, string overlay,\
     logo_clip = ImageSource(overlay, end=logo_frame_count-1, pixel_type="RGB32")
     Assert(logo_clip.FrameCount() == logo_frame_count, "LogoDraw内部错误：logo_clip帧数与给定值不等")
     
-    #向logo_clip应用zoom
-    logo_clip = zoom!=1.0 ? logo_clip.Spline64Resize(Round(logo_clip.Width*zoom/4)*4, Round(logo_clip.Height*zoom/4)*4) : logo_clip
+    #应用zoom、par_fit
+    logo_clip = zoom==1.0 && par_fit==1.0 ? logo_clip : \
+        logo_clip.Spline64Resize(Round(logo_clip.Width*zoom/par_fit), Round(logo_clip.Height*zoom))
     
     #对mask应用fadein、fadeout
     logo_clip_mask = logo_clip

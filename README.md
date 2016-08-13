@@ -1,12 +1,12 @@
 # LogoDraw
 
-LogoDraw 1.0
+LogoDraw
 
 在给定的影片上覆盖指定的logo。
 
 支持设置覆盖的锚点坐标、锚点定位方式、开始帧、结束帧、渐进渐出、透明度、放缩比例 等。
 
-本函数是对QiuSJ:JXlogoAdd.avsi的代码重构功能增强版本，兼容原版参数。
+受到了QiuSJ:JXlogoAdd.avsi的启发，兼容原版参数。
 
 示例、详细说明见LogoDraw.avsi注释。
 
