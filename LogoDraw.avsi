@@ -14,12 +14,12 @@
 
 
 #
-#   LogoDraw 1.2
+#   LogoDraw 1.3
 #
 #   在给定的影片上覆盖png格式的logo。
 #   支持设置覆盖的锚点坐标、定位方式、开始/结束帧、渐进渐出、透明度、放缩比例 等。
 #
-#   本函数兼容QiuSJ:JXlogoAdd.avsi的参数，感谢QiuSJ的点子。
+#   兼容QiuSJ:JXlogoAdd.avsi的参数。
 #
 #
 #   Author : Mikey
@@ -88,7 +88,8 @@
 #
 # zoom             logo放缩比例，1表示不改变大小，0.0~1.0表示缩小，大于1.0表示放大
 #
-# par_fit          适应成品影片的pixel aspect ratio，使logo在成品中按原比例显示。只拉伸logo宽度以适应，不改变logo高度。
+# dar_fit          改变logo纵横比例，以适应成品影片的显示比例，使logo在成品中按原比例显示。
+#                  只拉伸logo宽度以适应，不改变logo高度。若不填dar_fit，则不改变logo纵横比例。
 #
 
 
@@ -129,6 +130,10 @@
 
 ###---CHANGELOG---
 #
+#
+#   2016.8.14 v1.3 by Mikey
+#       砍掉par_fit，改为dar_fit，使logo在成品中按原比例显示。
+#
 #   2016.8.13 v1.2 by Mikey
 #       支持par_fit，使logo在成品中按原比例显示。
 #
@@ -145,7 +150,7 @@ function LogoDraw (clip src, string overlay,\
     int "align", val "x", val "y", \
     int "start", int "end", int "end_margin", \
     int "fadein", int "fadeout", float "opacity", \
-     float "zoom", float "par_fit") {
+    float "zoom", float "dar_fit") {
     
     align  = Default(align,              7)
 
@@ -162,7 +167,6 @@ function LogoDraw (clip src, string overlay,\
     fadeout = Default(fadeout,              0)
     opacity = Default(opacity,              1.00)
     zoom    = Default(zoom,                 1.00)
-    par_fit     = Default(par_fit,          1.00)
     
     Assert(start   >= 0,  "start below 0")
     Assert((Defined(end) && Defined(end_margin))==false,  "暂不支持同时定义end、end_margin")
@@ -193,6 +197,9 @@ function LogoDraw (clip src, string overlay,\
     Assert(logo_clip.FrameCount() == logo_frame_count, "LogoDraw内部错误：logo_clip帧数与给定值不等")
     
     #应用zoom、par_fit
+    sar_fit = 1.0 * src.Width / src.Height
+    par_fit = Defined(dar_fit) ? (dar_fit / sar_fit) : 1.0
+    
     logo_clip = zoom==1.0 && par_fit==1.0 ? logo_clip : \
         logo_clip.Spline64Resize(Round(logo_clip.Width*zoom/par_fit), Round(logo_clip.Height*zoom))
     
@@ -200,7 +207,6 @@ function LogoDraw (clip src, string overlay,\
     logo_clip_mask = logo_clip
     logo_clip_mask = fadein>0  ? logo_clip_mask.FadeIn0(fadein)   : logo_clip_mask
     logo_clip_mask = fadeout>0 ? logo_clip_mask.FadeOut0(fadeout) : logo_clip_mask
-    
     
     
     
